@@ -2,8 +2,17 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Display |    Name    |            Github Profile             | Portfolio
 =======
+=======
+Display | Name  |            Github Profile             | Portfolio 
+--------|:-----:|:-------------------------------------:|:---------:
+![](https://via.placeholder.com/100.png?text=Photo) | Howie | [Github](https://github.com/HowieYHY) | [Portfolio](docs/team/howieyhy.md)
+Display |   Name   |            Github Profile             | Portfolio 
+--------|:--------:|:-------------------------------------:|:---------:
+![](https://via.placeholder.com/100.png?text=Photo) |   Ivan   | [Github](https://github.com/ivan-tan) | ivan-tan
+>>>>>>> 2418d3e26a9b5a353d5ec86139c2f4ab181bce26
 
 Display |    Name    |            Github Profile             | Portfolio 
 >>>>>>> 2b4b3b5b506b5e39e5df55d3c51554e0258a83ad
