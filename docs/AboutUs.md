@@ -1,5 +1,5 @@
 # About us
 
-Display | Name | Github Profile | Portfolio 
---------|:----:|:--------------:|:---------:
-![](https://via.placeholder.com/100.png?text=Photo) | John Doe | [Github](https://github.com/KanakornMek) | [Portfolio](docs/team/kanakorn.md)
+Display |       Name        | Github Profile | Portfolio 
+--------|:-----------------:|:--------------:|:---------:
+![](https://via.placeholder.com/100.png?text=Photo) | Kanakorn Suk-ieam | [Github](https://github.com/KanakornMek) | KanakornMek
