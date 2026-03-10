@@ -12,13 +12,16 @@ public class Parser {
 
     public Command readCommand() throws ExpensiveLehException {
         System.out.print("> ");
+        if (!scanner.hasNextLine()) {
+            return new ExitCommand();
+        }
         String line = scanner.nextLine().trim();
         String[] partsBySpace = line.split("\\s+");
         String command = partsBySpace[0].toLowerCase();
 
         switch (command) {
         case "exit":
-            System.out.println("Bye!");
+            //System.out.println("Bye!");
             return new ExitCommand();
 
         case "add":
