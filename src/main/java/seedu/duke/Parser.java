@@ -42,15 +42,7 @@ public class Parser {
             return parseAddCommand(line);
 
         case "edit":
-            try {
-                int editIndex = Integer.parseInt(partsBySpace[1]) - 1;
-                System.out.println("Edited!");
-                return new EditCommand(editIndex, null, null, null, null);
-            } catch (IndexOutOfBoundsException e) {
-                throw new ExpensiveLehException("Please enter a valid integer from the expense list!");
-            } catch (NumberFormatException e) {
-                throw new ExpensiveLehException("Please enter a valid integer!");
-            }
+            return parseEditCommand(line);
 
         case "delete":
             try {
@@ -130,6 +122,59 @@ public class Parser {
             throw new ExpensiveLehException("Invalid amount format. Please enter a valid number.");
         } catch (Exception e) {
             throw new ExpensiveLehException("Invalid add command format. Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+        }
+    }
+
+    private Command parseEditCommand(String line) throws ExpensiveLehException {
+        String[] parts = line.split("\\s+");
+
+        if (parts.length < 2) {
+            throw new ExpensiveLehException("Please provide an expense index to edit!");
+        }
+
+        int editIndex;
+        try {
+            editIndex = Integer.parseInt(parts[1]) - 1;
+        } catch (NumberFormatException e) {
+            throw new ExpensiveLehException("Please enter a valid integer for the expense index!");
+        }
+
+        String category = null;
+        String name = null;
+        Double amount = null;
+        LocalDate date = null;
+
+        try {
+            for (int i = 2; i < parts.length; i++) {
+                String part = parts[i];
+                if (part.startsWith("c/")) {
+                    category = part.substring(2);
+                } else if (part.startsWith("n/")) {
+                    name = part.substring(2);
+                } else if (part.startsWith("a/")) {
+                    amount = Double.parseDouble(part.substring(2));
+                } else if (part.startsWith("d/")) {
+                    date = LocalDate.parse(part.substring(2), java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                }
+            }
+
+            if (category == null && name == null && amount == null && date == null) {
+                throw new ExpensiveLehException("Please specify at least one field to edit: c/CATEGORY, n/NAME, a/AMOUNT, or d/DD-MM-YYYY");
+            }
+
+            if (amount != null && amount <= 0) {
+                throw new ExpensiveLehException("Expense amount must be positive.");
+            }
+
+            System.out.println("Edited!");
+            return new EditCommand(editIndex, category, name, amount, date);
+
+        } catch (java.time.format.DateTimeParseException e) {
+            throw new ExpensiveLehException("Invalid date format. Please use DD-MM-YYYY (e.g., 13-03-2026).");
+        } catch (NumberFormatException e) {
+            throw new ExpensiveLehException("Invalid amount format. Please enter a valid number.");
+        } catch (Exception e) {
+            throw new ExpensiveLehException("Invalid edit command format. Usage: edit INDEX [c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]");
         }
     }
 }
