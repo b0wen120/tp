@@ -16,7 +16,7 @@ public class ParserTest {
     }
 
     /*
-     * Tests for exit command
+     * Test for exit command
      */
     @Test
     public void parseExitCommand_parsedCorrectly() throws ExpensiveLehException {
@@ -26,7 +26,7 @@ public class ParserTest {
     }
 
     /*
-     * Tests for exit command
+     * Test for list command
      */
     @Test
     public void parseListCommand_parsedCorrectly() throws ExpensiveLehException {
@@ -36,7 +36,7 @@ public class ParserTest {
     }
 
     /*
-     * Tests for exit command
+     * Test for help command
      */
     @Test
     public void parseHelpCommand_parsedCorrectly() throws ExpensiveLehException {
@@ -94,7 +94,7 @@ public class ParserTest {
     }
 
     /*
-     * Tests for edit command
+     * Test for edit command
      */
     @Test
     public void parseEditCommand_validArgs_returnsEditCommand() throws ExpensiveLehException {
@@ -104,7 +104,7 @@ public class ParserTest {
     }
 
     /*
-     * Tests for unknown command
+     * Test for unknown command
      */
     @Test
     public void parse_unknownCommand_throwsException() {
@@ -113,7 +113,7 @@ public class ParserTest {
     }
 
     /*
-     * Utility methods
+     * Utility method
      */
     private Command parse(String input) throws ExpensiveLehException {
         System.setIn(new java.io.ByteArrayInputStream(input.getBytes()));
