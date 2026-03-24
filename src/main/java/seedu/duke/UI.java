@@ -43,7 +43,7 @@ public class UI {
 
     public void showMessage(String message) {
         System.out.println(lineSeparator);
-        System.out.println(" ExpensiveLeh says -> " + message);
+        System.out.println("ExpensiveLeh says -> " + message);
         System.out.println(lineSeparator);
     }
 
@@ -63,7 +63,7 @@ public class UI {
 
     public void showRanking(List<Map.Entry<String, Double>> rankedList) {
         System.out.println(lineSeparator);
-        System.out.println(" ExpensiveLeh says -> Here is your spending ranked, by category: ");
+        System.out.println("ExpensiveLeh says -> Here is your spending ranked, by category: ");
         System.out.println();
 
         double highestAmount = rankedList.get(0).getValue();
