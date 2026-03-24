@@ -48,18 +48,30 @@ public class Parser {
         case "delete":
             try {
                 int deleteIndex = Integer.parseInt(partsBySpace[1]) - 1;
-                return new DeleteCommand(deleteIndex);
+                return new DeleteCommand(deleteIndex, "expense");
             } catch (IndexOutOfBoundsException e) {
                 throw new ExpensiveLehException("Please enter a valid integer from the expense list!");
             } catch (NumberFormatException e) {
                 throw new ExpensiveLehException("Please enter a valid integer!");
             }
 
-        case "list":
+        case "list": //list all expenses only
             return new ListCommand("expenses");
 
-        case "loans":
+        case "loans": // list all loans only
             return new ListCommand("loans");
+
+
+        case "paid":
+            try {
+                int deleteIndex = Integer.parseInt(partsBySpace[1]) - 1;
+                return new DeleteCommand(deleteIndex, "loan");
+            } catch (IndexOutOfBoundsException e) {
+                throw new ExpensiveLehException("Please enter a valid integer from the expense list!");
+            } catch (NumberFormatException e) {
+                throw new ExpensiveLehException("Please enter a valid integer!");
+            }
+
 
         case "help":
             return new HelpCommand();

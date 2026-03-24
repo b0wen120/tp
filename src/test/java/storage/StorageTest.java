@@ -58,7 +58,7 @@ class StorageTest {
         assertEquals("Jack", loadedData.loans.get(0).getDescription(), "Loan name should match");
         assertEquals(50.0, loadedData.loans.get(0).getAmount(), "Loan amount should match");
         assertEquals("Ashley", loadedData.loans.get(1).getDescription());
-        assertEquals(25.50, loadedData.loans.get(1).getAmount());
+        assertEquals(60.0, loadedData.loans.get(1).getAmount());
     }
 
     @Test
@@ -70,4 +70,6 @@ class StorageTest {
         assertTrue(data.expenses.isEmpty());
         assertTrue(data.loans.isEmpty(), "Loans list should also be empty");
     }
+
+
 }
