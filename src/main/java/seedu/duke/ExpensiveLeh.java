@@ -1,7 +1,7 @@
 package seedu.duke;
 
 import storage.Storage;
-
+import loans.LoanManager;
 import java.io.IOException;
 
 public class ExpensiveLeh {
@@ -10,14 +10,16 @@ public class ExpensiveLeh {
     private UI ui = new UI();
     private Storage storage = new Storage("data/expenses.txt");
     private ExpenseManager expenseManager;
+    private Managers managers;
 
     public void run() {
         try {
             Storage.StorageData data = storage.load();
-            expenseManager = new ExpenseManager(data.expenses, data.budget);
+            managers = new Managers(new ExpenseManager(data.expenses, data.budget), new LoanManager());
         } catch (IOException e) {
             ui.showError("Could not load save file: " + e.getMessage());
-            expenseManager = new ExpenseManager();
+            managers = new Managers(new ExpenseManager(), new LoanManager());
+            // expenseManager = new ExpenseManager();
         }
 
         ui.showWelcome();
@@ -26,8 +28,8 @@ public class ExpensiveLeh {
         while (isRunning) {
             try {
                 Command command = parser.readCommand();
-                command.execute(expenseManager, ui);
-                storage.save(expenseManager.getBudget(), expenseManager.getExpenses());
+                command.execute(managers, ui);
+                storage.save(managers.getExpenseManager().getBudget(), managers.getExpenseManager().getExpenses());
                 if (command instanceof ExitCommand) {
                     isRunning = false;
                 }

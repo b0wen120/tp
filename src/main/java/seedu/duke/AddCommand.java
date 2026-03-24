@@ -8,8 +8,9 @@ public class AddCommand extends Command {
     }
 
     @Override
-    public void execute(ExpenseManager expenses, UI ui) throws ExpensiveLehException {
-        expenses.addExpense(expense);
+    public void execute(Managers managers, UI ui) throws ExpensiveLehException {
+        ExpenseManager expenseManager = managers.getExpenseManager();
+        expenseManager.addExpense(expense);
         ui.showMessage("Expense added successfully!"
                 + "\n================================================"
                 + "\nCategory : " + expense.getCategory()
@@ -17,6 +18,6 @@ public class AddCommand extends Command {
                 + "\nValue    : $" + String.format("%.2f", expense.getAmount())
                 + "\nDate     : " + expense.getFormattedDate()
                 + "\n================================================"
-                + "\nRemaining Budget: $" + String.format("%.2f", expenses.getRemainingBudget()));
+                + "\nRemaining Budget: $" + String.format("%.2f", expenseManager.getRemainingBudget()));
     }
 }

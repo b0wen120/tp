@@ -8,8 +8,9 @@ public class DeleteCommand extends Command {
     }
 
     @Override
-    public void execute(ExpenseManager expenses, UI ui) throws ExpensiveLehException {
-        Expense removedExpense = expenses.deleteExpense(index);
+    public void execute(Managers managers, UI ui) throws ExpensiveLehException {
+        ExpenseManager expenseManager = managers.getExpenseManager();
+        Expense removedExpense = expenseManager.deleteExpense(index);
         ui.showMessage((index + 1) + ": " + removedExpense.getCategory()
                 + " " + removedExpense.getDescription()
                 + " $" + String.format("%.2f", removedExpense.getAmount())
