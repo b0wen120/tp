@@ -55,8 +55,21 @@ public class Parser {
 
         case "delete":
             try {
-                int deleteIndex = Integer.parseInt(partsBySpace[1]) - 1;
-                return new DeleteCommand(deleteIndex, "expense");
+                if (partsBySpace.length < 3) {
+                    throw new ExpensiveLehException("Usage: delete expense INDEX or delete bookmark INDEX");
+                }
+
+                String type = partsBySpace[1];
+                int deleteIndex = Integer.parseInt(partsBySpace[2]) - 1;
+
+                if (type.equals("expense")) {
+                    return new DeleteCommand(deleteIndex, "expense");
+                } else if (type.equals("bookmark")) {
+                    return new DeleteCommand(deleteIndex, "bookmark");
+                } else {
+                    throw new ExpensiveLehException("Invalid delete type. Use 'expense' or 'bookmark'");
+                }
+
             } catch (IndexOutOfBoundsException e) {
                 throw new ExpensiveLehException("Please enter a valid integer from the expense list!");
             } catch (NumberFormatException e) {
@@ -65,7 +78,6 @@ public class Parser {
 
         case "loans": // list all loans only
             return new ListCommand("loans");
-
 
         case "paid":
             try {
@@ -77,9 +89,21 @@ public class Parser {
                 throw new ExpensiveLehException("Please enter a valid integer!");
             }
 
+        case "bookmark":
+            try {
+                int bookmarkIndex = Integer.parseInt(partsBySpace[1]) - 1;
+                return new BookmarkCommand(bookmarkIndex);
+            } catch (IndexOutOfBoundsException e) {
+                throw new ExpensiveLehException("Please enter a valid integer from the expense list!");
+            } catch (NumberFormatException e) {
+                throw new ExpensiveLehException("Please enter a valid integer!");
+            }
+
         case "list": // either list budgets or list expenses
             if (partsBySpace.length > 1 && partsBySpace[1].equalsIgnoreCase("budgets")) {
                 return new ListBudgetsCommand();
+            } else if (partsBySpace.length > 1 && partsBySpace[1].equalsIgnoreCase("bookmarks")) {
+                return new ListCommand("bookmarks");
             }
             return new ListCommand("expenses");
 
@@ -114,6 +138,19 @@ public class Parser {
 
         try {
             String[] parts = line.split("\\s+");
+
+            if (parts.length > 1 && parts[1].equals("bookmark")) {
+                if (parts.length < 3) {
+                    throw new ExpensiveLehException("Please enter a bookmark index!");
+                }
+                try {
+                    int bookmarkIndex = Integer.parseInt(parts[2]) - 1;
+                    return new AddCommand(bookmarkIndex, "bookmark");
+                } catch (NumberFormatException e) {
+                    throw new ExpensiveLehException("Please enter a valid integer!");
+                }
+            }
+
             for (int i = 1; i < parts.length; i++) {
                 String part = parts[i];
                 if (part.startsWith("c/")) {
@@ -168,6 +205,8 @@ public class Parser {
 
             return new AddCommand(expense, "expense");
 
+        } catch (ExpensiveLehException e) {
+            throw e;
         } catch (java.time.format.DateTimeParseException e) {
             throw new ExpensiveLehException("Invalid date format. Please use DD-MM-YYYY (e.g., 13-03-2026).");
         } catch (NumberFormatException e) {
