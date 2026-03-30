@@ -119,8 +119,11 @@ public class Parser {
                 throw new ExpensiveLehException("Search error: " + e.getMessage());
             }
 
-        case "rank":
-            return new RankCommand();
+        case "rank": // either ranks loans or ranks expenses
+            if (partsBySpace.length > 1 && partsBySpace[1].equalsIgnoreCase("loans")) {
+                return new RankCommand("Loan");
+            }
+            return new RankCommand("expense");
 
         case "help":
             return new HelpCommand();
@@ -221,14 +224,32 @@ public class Parser {
         String[] parts = line.split("\\s+");
 
         if (parts.length < 2) {
-            throw new ExpensiveLehException("Please provide an expense index to edit!");
+            throw new ExpensiveLehException("Please provide an index to edit!");
         }
 
+        boolean isLoan = false;
         int editIndex;
-        try {
-            editIndex = Integer.parseInt(parts[1]) - 1;
-        } catch (NumberFormatException e) {
-            throw new ExpensiveLehException("Please enter a valid integer for the expense index!");
+        int argStartIndex = 2; // Default start index for arguments
+
+        // Check if the user is trying to edit a loan
+        if (parts[1].equalsIgnoreCase("loan")) {
+            isLoan = true;
+            if (parts.length < 3) {
+                throw new ExpensiveLehException("Please provide a loan index to edit!");
+            }
+            try {
+                editIndex = Integer.parseInt(parts[2]) - 1;
+                argStartIndex = 3; // Shift the loop start point since "loan" took up a spot
+            } catch (NumberFormatException e) {
+                throw new ExpensiveLehException("Please enter a valid integer for the loan index!");
+            }
+        } else {
+            // Default expense behavior
+            try {
+                editIndex = Integer.parseInt(parts[1]) - 1;
+            } catch (NumberFormatException e) {
+                throw new ExpensiveLehException("Please enter a valid integer for the expense index!");
+            }
         }
 
         String category = null;
@@ -237,14 +258,15 @@ public class Parser {
         LocalDate date = null;
 
         try {
-            for (int i = 2; i < parts.length; i++) {
+            for (int i = argStartIndex; i < parts.length; i++) {
                 String part = parts[i];
                 if (part.startsWith("c/")) {
                     category = part.substring(2);
                 } else if (part.startsWith("n/")) {
                     StringBuilder nameParts = new StringBuilder(part.substring(2));
 
-                    while (i + 1 < parts.length && !parts[i + 1].startsWith("a/")) {
+                    while (i + 1 < parts.length && !parts[i + 1].startsWith("a/")
+                            && !parts[i + 1].startsWith("c/") && !parts[i + 1].startsWith("d/")) {
                         nameParts.append(" ").append(parts[++i]);
                     }
                     name = nameParts.toString();
@@ -262,10 +284,12 @@ public class Parser {
             }
 
             if (amount != null && amount <= 0) {
-                throw new ExpensiveLehException("Expense amount must be positive.");
+                throw new ExpensiveLehException("Amount must be positive.");
             }
 
-            return new EditCommand(editIndex, category, name, amount, date);
+            // Pass flag to EditCommand
+            String type = isLoan ? "loan" : "expense";
+            return new EditCommand(editIndex, category, name, amount, date, type);
 
         } catch (java.time.format.DateTimeParseException e) {
             throw new ExpensiveLehException("Invalid date format. Please use DD-MM-YYYY (e.g., 13-03-2026).");
@@ -273,7 +297,8 @@ public class Parser {
             throw new ExpensiveLehException("Invalid amount format. Please enter a valid number.");
         } catch (Exception e) {
             throw new ExpensiveLehException(
-                    "Invalid edit command format. Usage: edit INDEX [c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]");
+                    "Invalid edit command format. Usage: " +
+                            "edit [loan] INDEX [c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]");
         }
     }
 
