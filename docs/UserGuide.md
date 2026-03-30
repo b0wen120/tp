@@ -1,42 +1,72 @@
-# User Guide
 
-## Introduction
+### <u>Ranking expenses</u>
+Displays a visual bar chart ranking all your spending categories from highest to lowest.
 
-{Give a product intro}
+**Format:** `rank expenses`
 
-## Quick Start
+**Output:**
+```text
+  ExpensiveLeh says -> Here is your spending ranked by category:
 
-{Give steps to get started quickly}
+  1. XXX            [$  300.00] ████████████████████
+  2. YYY            [$  150.00] ██████████
+  3. AAA            [$   75.00] █████
+  4. BBB            [$   10.00] █
+  ```
+**Example:**
 
-1. Ensure that you have Java 17 or above installed.
-1. Down the latest version of `Duke` from [here](http://link.to/duke).
+```text
+  rank expenses
+  
+  ExpensiveLeh says -> Here is your spending ranked by category:
 
-## Features 
+  1. Food            [$  300.00] ████████████████████
+  2. Transport       [$  150.00] ██████████
+  3. Groceries       [$   75.00] █████
+  4. Others          [$   10.00] █
+  ```
 
-{Give detailed description of each feature}
 
-### Adding a todo: `todo`
-Adds a new item to the list of todo items.
+### <u>Editing a loan</u>
+Edits an existing loan record in your loans list.
+Format: edit loan INDEX [n/PERSON_NAME] [a/AMOUNT] [d/DATE]
+* Edits the existing loan at the specified INDEX. The index refers to the index number shown in the displayed loans list.
+* At least one of the optional fields must be provided.
+* Existing values will be updated to the input values.
 
-Format: `todo n/TODO_NAME d/DEADLINE`
+Output: Loan at index INDEX updated successfully!
 
-* The `DEADLINE` can be in a natural language format.
-* The `TODO_NAME` cannot contain punctuation.  
+Examples:
+* edit loan 1 n/Jonathan a/55.00
+* Loan at index 1 updated successfully!
 
-Example of usage: 
+### <u>Ranking loans</u>
+Displays a visual bar chart ranking who owes you the most money, from highest to lowest.
 
-`todo n/Write the rest of the User Guide d/next week`
+**Format:** `rank loans`
 
-`todo n/Refactor the User Guide to remove passive voice d/13/04/2020`
+**Output:** 
+```text
+  ExpensiveLeh says -> Here are your loans ranked by person:
 
-## FAQ
+  1. AAA            [$  300.00] ████████████████████
+  2. BBB            [$  150.00] ██████████
+  3. CCC            [$   75.00] █████
+  4. DDD            [$   10.00] █
+  ```
+**Example:** 
+```text
+  rank loans
+  
+  ExpensiveLeh says -> Here are your loans ranked by person:
 
-**Q**: How do I transfer my data to another computer? 
+  1. Ali            [$  300.00] ████████████████████
+  2. Bob            [$  150.00] ██████████
+  3. Eli            [$   75.00] █████
+  4. Lex            [$   10.00] █
+  ```
 
-**A**: {your answer here}
+### <u>Exit</u>
+Exits the program.
 
-## Command Summary
-
-{Give a 'cheat sheet' of commands here}
-
-* Add todo `todo n/TODO_NAME d/DEADLINE`
+FORMAT: exit
