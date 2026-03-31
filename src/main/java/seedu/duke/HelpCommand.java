@@ -3,11 +3,15 @@ package seedu.duke;
 public class HelpCommand extends Command {
     @Override
     public void execute(Managers managers, UI ui) throws ExpensiveLehException {
-        String helpMessage = "\nTo add an expense, use 'add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]'. Eg: add c/Food n/Chicken Rice a/9.95\n"
-                + "To add a loan, use 'add c/loan n/NAME a/AMOUNT [d/DD-MM-YYYY]'. Eg: add c/loan n/John Doe a/50.00\n"
+        String helpMessage = "\nTo add an expense, use 'add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]'. "
+                + "Eg: add c/Food n/Chicken Rice a/9.95\n"
+                + "To add a loan, use 'add c/loan n/NAME a/AMOUNT [d/DD-MM-YYYY]'. "
+                + "Eg: add c/loan n/John Doe a/50.00\n"
                 + "To add a bookmark to expenses, use 'add bookmark INDEX'. Eg: add bookmark 1\n"
-                + "To edit an expense, use 'edit INDEX [c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]'. Eg: edit 1 a/10.00\n"
-                + "To edit a loan, use 'edit loan INDEX [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]'. Eg: edit loan 1 a/100.00\n"
+                + "To edit an expense, use 'edit INDEX [c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]'. "
+                + "Eg: edit 1 a/10.00\n"
+                + "To edit a loan, use 'edit loan INDEX [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]'. "
+                + "Eg: edit loan 1 a/100.00\n"
                 + "To delete an expense, use 'delete expense INDEX'. Eg: delete expense 1\n"
                 + "To delete a loan, use 'delete loan INDEX'. Eg: delete loan 1\n"
                 + "To delete a bookmark, use 'delete bookmark INDEX'. Eg: delete bookmark 1\n"

@@ -56,7 +56,8 @@ public class Parser {
         case "delete":
             try {
                 if (partsBySpace.length < 3) {
-                    throw new ExpensiveLehException("Usage: delete expense INDEX, delete loan INDEX, or delete bookmark INDEX");
+                    throw new ExpensiveLehException(
+                            "Usage: delete expense INDEX, delete loan INDEX, or delete bookmark INDEX");
                 }
 
                 String type = partsBySpace[1];
