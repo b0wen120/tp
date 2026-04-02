@@ -305,26 +305,24 @@ It implements the following operations:
 - `Bookmark.save()` — Persists the current bookmark list to the save file.
 - `Bookmark.load()` — Loads the bookmark list from the save file on startup.
 
-These operations are exposed through `Managers` class via `Managers.getBookmark()`.
+Here is the class diagram of `Bookmark`:
 
-Given below is an example usage scenario and how the bookmark feature behaves at each step.
+![Bookmark Class Diagram](Diagrams/BookmarkClassDiagram.png)
 
-**Step 1.** The user launches the application. `Bookmark.load()` is called, which reads the save file at `data/bookmarks.txt` and reconstructs the bookmark list.
-If the file does not exist, the bookmark list starts empty.
+The sequence diagram below illustrates the interactions within the system when a user executes the `Bookmark` command.
 
-**Step 2.** The user executes `bookmark 2` to bookmark the 2nd expense in the expense list. `Parser` parses the index and creates a `BookmarkCommand(1)`. 
-`BookmarkCommand.execute()` retrieves the expense from `ExpenseManager` and calls `Bookmark.addBookmark(expense)`, followed by `Bookmark.save()`.
+![BookmarkCommand Sequence Diagram](Diagrams/BookmarkSequenceDiagram.png)
 
-**Step 3.** The user executes `list bookmarks` to view all bookmarked expenses. `Parser` creates a `ListCommand("bookmarks")`, which retrieves the bookmark list 
-via `Managers.getBookmark()` and displays all bookmarks.
+Given below is an example usage of `BookmarkCommand`:
 
-**Step 4.** The user executes `add bookmark 1` to add a bookmarked expense directly into the expense list. `Parser` detects the `bookmark` keyword in `parseAddCommand()` 
-and creates an `AddCommand(0, "bookmark")`. `AddCommand.execute()` retrieves the bookmarked expense and adds it to `ExpenseManager`.
+**Step 1.** The user executes `bookmark 2` to bookmark the 2nd expense in the expense list. 
+`Parser` parses the index and creates a `BookmarkCommand(1)`.
 
-**Step 5.** The user executes `delete bookmark 1` to remove the 1st bookmarked expense. `Parser` creates a `DeleteCommand(0, "bookmark")`. 
-`DeleteCommand.execute()` calls `Bookmark.removeBookmark(0)` to remove the bookmark from the list.
+**Step 2.** `BookmarkCommand.execute()` retrieves the expense at index 1 from `ExpenseManager` via `Managers.getExpenseManager()`.
 
-> **Note:** `Bookmark#save()` is called immediately after every add or delete operation to ensure the save file is always in sync with the in-memory list.
+**Step 3.** `Bookmark.addBookmark(expense)` is called to add the retrieved expense to the bookmark list.
+
+**Step 4.** `Bookmark.save()` is called to immediately persist the updated bookmark list to `data/bookmarks.txt`.
 
 **Design Considerations**
 
