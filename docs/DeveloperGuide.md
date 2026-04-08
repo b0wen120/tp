@@ -192,7 +192,7 @@ The expense management system in ExpensiveLeh is implemented through the `Expens
 
 The add expense feature is implemented through the `AddCommand` class and `ExpenseManager#addExpense()` method. The flow involves:
 
-1. **Parser Phase**: The user input `expense add /c Food /n Lunch /v 10.50` is parsed to extract category, description, amount, and optionally date.
+1. **Parser Phase**: The user input `add c/Food n/Lunch a/10.50` is parsed to extract category, description, amount, and optionally date.
 
 2. **Command Creation**: Based on the category, an appropriate `Expense` subclass is instantiated (e.g., `Food`, `Transport`, `Groceries`, `Others`).
 
@@ -209,7 +209,7 @@ Example:
 
 **Step 1.** The user launches the application and wants to add a new lunch expense. The user enters the command:
 ```
-expense add /c Food /n Lunch /v 10.50
+add c/Food n/Lunch a/10.50
 ```
 
 **Step 2.** The parser recognizes this as an add expense command and extracts:
@@ -302,7 +302,7 @@ The edit expense feature is implemented through the `EditCommand` class and `Exp
 
 **Step 1.** The user wants to change the amount of expense at index 2 from $5.00 to $6.00:
 ```
-expense edit 2 /v 6.00
+edit 2 a/6.00
 ```
 
 **Step 2.** The `EditCommand#execute()` retrieves the current expense and creates a new one with the updated amount.
