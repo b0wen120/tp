@@ -26,6 +26,8 @@ public class BookmarkCommand extends Command {
                     + " " + expense.getFormattedDate());
         } catch (IndexOutOfBoundsException e) {
             throw new ExpensiveLehException("Please provide a valid expense index to bookmark!");
+        } catch (ExpensiveLehException e) {
+            throw e;
         } catch (IOException e) {
             ui.showError("Error saving bookmark: " + e.getMessage());
         }
