@@ -45,11 +45,14 @@ public class Parser {
 
                 // Default to global budget command
                 double budgetAmount = Double.parseDouble(partsBySpace[1]);
-                if (Double.isNaN(budgetAmount) || Double.isInfinite(budgetAmount)) {
+                if (Double.isNaN(budgetAmount)) {
                     throw new ExpensiveLehException("Budget must be a valid number!");
                 }
                 if (budgetAmount <= 0) {
                     throw new ExpensiveLehException("Budget must be a positive number!");
+                }
+                if (budgetAmount > 1000000000) {
+                    throw new ExpensiveLehException("Budget amount cannot exceed 1,000,000,000!");
                 }
                 return new BudgetCommand(budgetAmount);
             } catch (NumberFormatException e) {
@@ -463,11 +466,14 @@ public class Parser {
                 throw new ExpensiveLehException(
                         "Amount is required. Usage: budget c/CATEGORY a/AMOUNT");
             }
-            if (Double.isNaN(amount) || Double.isInfinite(amount)) {
+            if (Double.isNaN(amount)) {
                 throw new ExpensiveLehException("Budget amount must be a valid number.");
             }
             if (amount <= 0) {
                 throw new ExpensiveLehException("Budget amount must be positive.");
+            }
+            if (amount > 1000000000) {
+                throw new ExpensiveLehException("Budget amount cannot exceed 1,000,000,000!");
             }
 
             if (category.equalsIgnoreCase("food") || category.equalsIgnoreCase("groceries")
