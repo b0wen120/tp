@@ -3,6 +3,7 @@ package seedu.duke;
 import loans.Loan;
 
 import java.time.LocalDate;
+import java.time.format.ResolverStyle;
 import java.util.Scanner;
 
 /**
@@ -44,15 +45,19 @@ public class Parser {
 
                 // Default to global budget command
                 double budgetAmount = Double.parseDouble(partsBySpace[1]);
-                if (Double.isNaN(budgetAmount) || Double.isInfinite(budgetAmount)) {
+                if (Double.isNaN(budgetAmount)) {
                     throw new ExpensiveLehException("Budget must be a valid number!");
                 }
                 if (budgetAmount <= 0) {
                     throw new ExpensiveLehException("Budget must be a positive number!");
                 }
+                if (budgetAmount > 1000000000) {
+                    throw new ExpensiveLehException("Budget amount cannot exceed 1,000,000,000!");
+                }
                 return new BudgetCommand(budgetAmount);
             } catch (NumberFormatException e) {
-                throw new ExpensiveLehException("Please enter a valid budget amount!");
+                throw new ExpensiveLehException(
+                        "Please provide a valid budget amount or use 'budget c/CATEGORY a/AMOUNT'!");
             }
 
         case "add":
@@ -213,7 +218,8 @@ public class Parser {
                                 + "Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
                     }
                     date = LocalDate.parse(part.substring(2),
-                            java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                            java.time.format.DateTimeFormatter.ofPattern("dd-MM-uuuu")
+                                    .withResolverStyle(ResolverStyle.STRICT));
                     hasDate = true;
                 } else if (part.startsWith("/") && part.length() > 1) {
                     throw new ExpensiveLehException("Invalid format. Please use n/ for name, a/ for amount, "
@@ -242,6 +248,10 @@ public class Parser {
                         "NAME is required. Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
             }
 
+            if (!name.matches("[a-zA-Z0-9 ',.()/\\-]+")) {
+                throw new ExpensiveLehException("NAME contains invalid characters!");
+            }
+
             // 3. Check Amount third
             if (amount == null) {
                 throw new ExpensiveLehException(
@@ -252,6 +262,9 @@ public class Parser {
             }
             if (amount <= 0) {
                 throw new ExpensiveLehException("Amount must be positive!");
+            }
+            if (amount > 1000000000) {
+                throw new ExpensiveLehException("Amount cannot exceed 1,000,000,000!");
             }
 
             Expense expense;
@@ -280,7 +293,9 @@ public class Parser {
         } catch (ExpensiveLehException e) {
             throw e;
         } catch (java.time.format.DateTimeParseException e) {
-            throw new ExpensiveLehException("Invalid date format. Please use DD-MM-YYYY (e.g., 13-03-2026).");
+            throw new ExpensiveLehException(
+                    "Invalid date! The date you entered does not exist. " +
+                            "Please enter a real calendar date in DD-MM-YYYY format.");
         } catch (NumberFormatException e) {
             throw new ExpensiveLehException("Invalid amount format. Please enter a valid number.");
         } catch (Exception e) {
@@ -364,6 +379,11 @@ public class Parser {
                         nameParts.append(" ").append(parts[++i]);
                     }
                     name = nameParts.toString();
+
+                    if (!name.matches("[a-zA-Z0-9 ',.()/\\-]+")) {
+                        throw new ExpensiveLehException("NAME contains invalid characters!");
+                    }
+
                     hasName = true;
                 } else if (part.startsWith("a/")) {
                     if (hasAmount) {
@@ -378,7 +398,8 @@ public class Parser {
                                 + "Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
                     }
                     date = LocalDate.parse(part.substring(2),
-                            java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                            java.time.format.DateTimeFormatter.ofPattern("dd-MM-uuuu")
+                                    .withResolverStyle(ResolverStyle.STRICT));
                     hasDate = true;
                 } else if (part.startsWith("/") && part.length() > 1) {
                     throw new ExpensiveLehException("Invalid format. Please use n/ for name, a/ for amount, "
@@ -409,6 +430,9 @@ public class Parser {
                 if (amount <= 0) {
                     throw new ExpensiveLehException("Amount must be positive.");
                 }
+                if (amount > 1000000000) {
+                    throw new ExpensiveLehException("Amount cannot exceed 1,000,000,000!");
+                }
             }
 
             // Pass flag to EditCommand
@@ -419,7 +443,9 @@ public class Parser {
         } catch (ExpensiveLehException e) {
             throw e;
         } catch (java.time.format.DateTimeParseException e) {
-            throw new ExpensiveLehException("Invalid date format. Please use DD-MM-YYYY (e.g., 13-03-2026).");
+            throw new ExpensiveLehException(
+                    "Invalid date! The date you entered does not exist. " +
+                            "Please enter a real calendar date in DD-MM-YYYY format.");
         } catch (NumberFormatException e) {
             throw new ExpensiveLehException("Invalid amount format. Please enter a valid number.");
         } catch (Exception e) {
@@ -468,11 +494,14 @@ public class Parser {
                 throw new ExpensiveLehException(
                         "Amount is required. Usage: budget c/CATEGORY a/AMOUNT");
             }
-            if (Double.isNaN(amount) || Double.isInfinite(amount)) {
+            if (Double.isNaN(amount)) {
                 throw new ExpensiveLehException("Budget amount must be a valid number.");
             }
             if (amount <= 0) {
                 throw new ExpensiveLehException("Budget amount must be positive.");
+            }
+            if (amount > 1000000000) {
+                throw new ExpensiveLehException("Budget amount cannot exceed 1,000,000,000!");
             }
 
             if (category.equalsIgnoreCase("food") || category.equalsIgnoreCase("groceries")
