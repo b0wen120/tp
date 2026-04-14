@@ -468,7 +468,7 @@ public class Parser {
             if (date != null) {
                 LocalDate today = LocalDate.now();
                 LocalDate minDate = today.minusYears(100);
-                LocalDate maxDate = today.plusYears(1);
+                LocalDate maxDate = today.plusYears(10);
                 if (date.isBefore(minDate) || date.isAfter(maxDate)) {
                     throw new ExpensiveLehException("Invalid Date! Please enter a date between "
                             + minDate.getYear() + " and " + maxDate.getYear() + ".");
