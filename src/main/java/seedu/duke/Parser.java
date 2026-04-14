@@ -26,127 +26,127 @@ public class Parser {
         String command = partsBySpace[0].toLowerCase();
 
         switch (command) {
-        case "exit":
-        case "bye":
-        case "quit":
-            return new ExitCommand();
+            case "exit":
+            case "bye":
+            case "quit":
+                return new ExitCommand();
 
-        case "budget":
-            try {
-                if (partsBySpace.length < 2) {
+            case "budget":
+                try {
+                    if (partsBySpace.length < 2) {
+                        throw new ExpensiveLehException(
+                                "Please provide a budget amount or use 'budget c/CATEGORY a/AMOUNT'!");
+                    }
+
+                    // Check if it's a category budget command
+                    if (line.contains("c/") && line.contains("a/")) {
+                        return parseBudgetCategoryCommand(line);
+                    }
+
+                    // Default to global budget command
+                    double budgetAmount = Double.parseDouble(partsBySpace[1]);
+                    if (Double.isNaN(budgetAmount)) {
+                        throw new ExpensiveLehException("Budget must be a valid number!");
+                    }
+                    if (budgetAmount <= 0) {
+                        throw new ExpensiveLehException("Budget must be a positive number!");
+                    }
+                    if (budgetAmount > 1000000000) {
+                        throw new ExpensiveLehException("Budget amount cannot exceed 1,000,000,000!");
+                    }
+                    return new BudgetCommand(budgetAmount);
+                } catch (NumberFormatException e) {
                     throw new ExpensiveLehException(
-                            "Please provide a budget amount or use 'budget c/CATEGORY a/AMOUNT'!");
+                            "Please provide a valid budget amount or use 'budget c/CATEGORY a/AMOUNT'!");
                 }
 
-                // Check if it's a category budget command
-                if (line.contains("c/") && line.contains("a/")) {
-                    return parseBudgetCategoryCommand(line);
+            case "add":
+                return parseAddCommand(line);
+
+            case "edit":
+                return parseEditCommand(line);
+
+            case "delete":
+                try {
+                    if (partsBySpace.length < 3) {
+                        throw new ExpensiveLehException("Missing details. Usage: "
+                                + "delete expense INDEX, delete loan INDEX, or delete bookmark INDEX");
+                    }
+
+                    String type = partsBySpace[1];
+                    int deleteIndex = Integer.parseInt(partsBySpace[2]) - 1;
+
+                    if (type.equals("expense")) {
+                        return new DeleteCommand(deleteIndex, "expense");
+                    } else if (type.equals("loan")) {
+                        return new DeleteCommand(deleteIndex, "loan");
+                    } else if (type.equals("bookmark")) {
+                        return new DeleteCommand(deleteIndex, "bookmark");
+                    } else {
+                        throw new ExpensiveLehException("Invalid delete type. Use 'expense', 'loan', or 'bookmark'");
+                    }
+
+                } catch (IndexOutOfBoundsException e) {
+                    throw new ExpensiveLehException("Please enter a valid integer from the list!");
+                } catch (NumberFormatException e) {
+                    throw new ExpensiveLehException("Please enter a valid integer!");
                 }
 
-                // Default to global budget command
-                double budgetAmount = Double.parseDouble(partsBySpace[1]);
-                if (Double.isNaN(budgetAmount)) {
-                    throw new ExpensiveLehException("Budget must be a valid number!");
-                }
-                if (budgetAmount <= 0) {
-                    throw new ExpensiveLehException("Budget must be a positive number!");
-                }
-                if (budgetAmount > 1000000000) {
-                    throw new ExpensiveLehException("Budget amount cannot exceed 1,000,000,000!");
-                }
-                return new BudgetCommand(budgetAmount);
-            } catch (NumberFormatException e) {
-                throw new ExpensiveLehException(
-                        "Please provide a valid budget amount or use 'budget c/CATEGORY a/AMOUNT'!");
-            }
-
-        case "add":
-            return parseAddCommand(line);
-
-        case "edit":
-            return parseEditCommand(line);
-
-        case "delete":
-            try {
-                if (partsBySpace.length < 3) {
-                    throw new ExpensiveLehException("Missing details. Usage: "
-                            + "delete expense INDEX, delete loan INDEX, or delete bookmark INDEX");
+            case "bookmark":
+                try {
+                    int bookmarkIndex = Integer.parseInt(partsBySpace[1]) - 1;
+                    return new BookmarkCommand(bookmarkIndex);
+                } catch (IndexOutOfBoundsException e) {
+                    throw new ExpensiveLehException("Please enter a valid integer from the expense list!");
+                } catch (NumberFormatException e) {
+                    throw new ExpensiveLehException("Please enter a valid integer!");
                 }
 
-                String type = partsBySpace[1];
-                int deleteIndex = Integer.parseInt(partsBySpace[2]) - 1;
-
-                if (type.equals("expense")) {
-                    return new DeleteCommand(deleteIndex, "expense");
-                } else if (type.equals("loan")) {
-                    return new DeleteCommand(deleteIndex, "loan");
-                } else if (type.equals("bookmark")) {
-                    return new DeleteCommand(deleteIndex, "bookmark");
+            case "list": // either list budgets, list loans, or list expenses
+                if (partsBySpace.length > 1 && partsBySpace[1].equalsIgnoreCase("budgets")) {
+                    return new ListBudgetsCommand();
+                } else if (partsBySpace.length > 1 && partsBySpace[1].equalsIgnoreCase("loans")) {
+                    return new ListCommand("loans");
+                } else if (partsBySpace.length > 1 && partsBySpace[1].equalsIgnoreCase("bookmarks")) {
+                    return new ListCommand("bookmarks");
+                } else if (partsBySpace.length > 1 && partsBySpace[1].equalsIgnoreCase("expenses")) {
+                    return new ListCommand("expenses");
                 } else {
-                    throw new ExpensiveLehException("Invalid delete type. Use 'expense', 'loan', or 'bookmark'");
+                    throw new ExpensiveLehException("List error! Please use: list expenses/budgets/loans/bookmarks");
                 }
 
-            } catch (IndexOutOfBoundsException e) {
-                throw new ExpensiveLehException("Please enter a valid integer from the list!");
-            } catch (NumberFormatException e) {
-                throw new ExpensiveLehException("Please enter a valid integer!");
-            }
 
-        case "bookmark":
-            try {
-                int bookmarkIndex = Integer.parseInt(partsBySpace[1]) - 1;
-                return new BookmarkCommand(bookmarkIndex);
-            } catch (IndexOutOfBoundsException e) {
-                throw new ExpensiveLehException("Please enter a valid integer from the expense list!");
-            } catch (NumberFormatException e) {
-                throw new ExpensiveLehException("Please enter a valid integer!");
-            }
+            case "search":
+                try {
+                    if (partsBySpace.length < 2) {
+                        throw new ExpensiveLehException("Please provide a keyword to search for!");
+                    }
+                    String keyword = line.substring(line.indexOf("search") + 6).trim();
+                    return new SearchCommand(keyword);
+                } catch (Exception e) {
+                    throw new ExpensiveLehException("Search error: " + e.getMessage());
+                }
 
-        case "list": // either list budgets, list loans, or list expenses
-            if (partsBySpace.length > 1 && partsBySpace[1].equalsIgnoreCase("budgets")) {
-                return new ListBudgetsCommand();
-            } else if (partsBySpace.length > 1 && partsBySpace[1].equalsIgnoreCase("loans")) {
-                return new ListCommand("loans");
-            } else if (partsBySpace.length > 1 && partsBySpace[1].equalsIgnoreCase("bookmarks")) {
-                return new ListCommand("bookmarks");
-            } else if (partsBySpace.length > 1 && partsBySpace[1].equalsIgnoreCase("expenses")) {
-                return new ListCommand("expenses");
-            } else {
-                throw new ExpensiveLehException("List error! Please use: list expenses/budgets/loans/bookmarks");
-            }
-
-
-        case "search":
-            try {
+            case "rank":
                 if (partsBySpace.length < 2) {
-                    throw new ExpensiveLehException("Please provide a keyword to search for!");
+                    throw new ExpensiveLehException("Please specify what to rank! Example: rank expenses or rank loans");
                 }
-                String keyword = line.substring(line.indexOf("search") + 6).trim();
-                return new SearchCommand(keyword);
-            } catch (Exception e) {
-                throw new ExpensiveLehException("Search error: " + e.getMessage());
-            }
 
-        case "rank":
-            if (partsBySpace.length < 2) {
-                throw new ExpensiveLehException("Please specify what to rank! Example: rank expenses or rank loans");
-            }
+                String rankType = partsBySpace[1].toLowerCase();
 
-            String rankType = partsBySpace[1].toLowerCase();
+                if (rankType.equals("expenses") || rankType.equals("expense")) {
+                    return new RankCommand("expense");
+                } else if (rankType.equals("loans") || rankType.equals("loan")) {
+                    return new RankCommand("loan");
+                } else {
+                    throw new ExpensiveLehException("Invalid rank category! Example: rank expenses OR rank loans");
+                }
 
-            if (rankType.equals("expenses") || rankType.equals("expense")) {
-                return new RankCommand("expense");
-            } else if (rankType.equals("loans") || rankType.equals("loan")) {
-                return new RankCommand("loan");
-            } else {
-                throw new ExpensiveLehException("Invalid rank category! Example: rank expenses OR rank loans");
-            }
+            case "help":
+                return new HelpCommand();
 
-        case "help":
-            return new HelpCommand();
-
-        default:
-            throw new ExpensiveLehException("Unknown command. Please use enter 'help' for the user guide.");
+            default:
+                throw new ExpensiveLehException("Unknown command. Please use enter 'help' for the user guide.");
         }
     }
 
@@ -159,7 +159,7 @@ public class Parser {
         try {
             String[] parts = line.split("\\s+");
 
-            if  (parts.length == 1) {
+            if (parts.length == 1) {
                 throw new ExpensiveLehException("Missing details. Usage: "
                         + "add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
             }
@@ -177,22 +177,41 @@ public class Parser {
             }
 
             // Boolean trackers for duplicate flags
-            // Boolean trackers for duplicate flags
             boolean hasCategory = false;
             boolean hasName = false;
             boolean hasAmount = false;
             boolean hasDate = false;
 
+            // Tracker to enforce strict c/ -> n/ -> a/ -> d/ , in that order
+            int lastSeenFlagOrder = 0;
+
+            // --- ONE SINGLE LOOP ---
             for (int i = 1; i < parts.length; i++) {
                 String part = parts[i];
+
+                if (part.startsWith("/") && part.length() > 1) {
+                    throw new ExpensiveLehException("Invalid format. Please use n/ for name, a/ for amount, "
+                            + "c/ for category, or d/ for date. Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                }
+
                 if (part.startsWith("c/")) {
+                    if (lastSeenFlagOrder >= 1) {
+                        throw new ExpensiveLehException("Incorrect format! Please follow the exact order: "
+                                + "c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                    }
                     if (hasCategory) {
                         throw new ExpensiveLehException("Duplicate category flag 'c/' found. "
                                 + "Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
                     }
                     category = part.substring(2);
                     hasCategory = true;
+                    lastSeenFlagOrder = 1;
+
                 } else if (part.startsWith("n/")) {
+                    if (lastSeenFlagOrder >= 2) {
+                        throw new ExpensiveLehException("Incorrect format! Please follow the exact order: "
+                                + "c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                    }
                     if (hasName) {
                         throw new ExpensiveLehException("Duplicate name flag 'n/' found. "
                                 + "Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
@@ -204,15 +223,32 @@ public class Parser {
                         nameParts.append(" ").append(parts[++i]);
                     }
                     name = nameParts.toString();
+
+                    if (!name.matches("[a-zA-Z0-9 ',.()/\\-]+")) {
+                        throw new ExpensiveLehException("NAME contains invalid characters!");
+                    }
+
                     hasName = true;
+                    lastSeenFlagOrder = 2;
+
                 } else if (part.startsWith("a/")) {
+                    if (lastSeenFlagOrder >= 3) {
+                        throw new ExpensiveLehException("Incorrect format! Please follow the exact order: "
+                                + "c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                    }
                     if (hasAmount) {
                         throw new ExpensiveLehException("Duplicate amount flag 'a/' found. "
                                 + "Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
                     }
                     amount = Double.parseDouble(part.substring(2));
                     hasAmount = true;
+                    lastSeenFlagOrder = 3;
+
                 } else if (part.startsWith("d/")) {
+                    if (lastSeenFlagOrder >= 4) {
+                        throw new ExpensiveLehException("Incorrect format! Please follow the exact order: "
+                                + "c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                    }
                     if (hasDate) {
                         throw new ExpensiveLehException("Duplicate date flag 'd/' found. "
                                 + "Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
@@ -221,9 +257,7 @@ public class Parser {
                             java.time.format.DateTimeFormatter.ofPattern("dd-MM-uuuu")
                                     .withResolverStyle(ResolverStyle.STRICT));
                     hasDate = true;
-                } else if (part.startsWith("/") && part.length() > 1) {
-                    throw new ExpensiveLehException("Invalid format. Please use n/ for name, a/ for amount, "
-                            + "c/ for category, or d/ for date. Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                    lastSeenFlagOrder = 4;
                 }
             }
 
@@ -248,10 +282,6 @@ public class Parser {
                         "NAME is required. Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
             }
 
-            if (!name.matches("[a-zA-Z0-9 ',.()/\\-]+")) {
-                throw new ExpensiveLehException("NAME contains invalid characters!");
-            }
-
             // 3. Check Amount third
             if (amount == null) {
                 throw new ExpensiveLehException(
@@ -269,23 +299,23 @@ public class Parser {
 
             Expense expense;
             switch (category.toLowerCase()) {
-            case "food":
-                expense = new Food(name, amount, date);
-                break;
-            case "transport":
-                expense = new Transport(name, amount, date);
-                break;
-            case "groceries":
-                expense = new Groceries(name, amount, date);
-                break;
-            case "loan":
-                expense = new Loan(name, amount, date);
-                return new AddCommand(expense, "loan");
-            case "others":
-                expense = new Others(name, amount, date);
-                break;
-            default:
-                throw new ExpensiveLehException("category must be food, transport, groceries, others or loan");
+                case "food":
+                    expense = new Food(name, amount, date);
+                    break;
+                case "transport":
+                    expense = new Transport(name, amount, date);
+                    break;
+                case "groceries":
+                    expense = new Groceries(name, amount, date);
+                    break;
+                case "loan":
+                    expense = new Loan(name, amount, date);
+                    return new AddCommand(expense, "loan");
+                case "others":
+                    expense = new Others(name, amount, date);
+                    break;
+                default:
+                    throw new ExpensiveLehException("category must be food, transport, groceries, others or loan");
             }
 
             return new AddCommand(expense, "expense");
@@ -307,40 +337,33 @@ public class Parser {
     private Command parseEditCommand(String line) throws ExpensiveLehException {
         String[] parts = line.split("\\s+");
 
-        // Catch empty edit command
-        if (parts.length == 1) {
+        // Catch commands that are too short (e.g., just "edit", "edit 1", or "edit expense")
+        if (parts.length < 3) {
             throw new ExpensiveLehException(
-                    "Missing details. Usage: "
-                    + "edit [loan/expense] INDEX [c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]");
+                    "Missing details. Please indicate if you are editing an expense or a loan.\n"
+                            + "Usage: edit expense INDEX [c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]\n"
+                            + "OR:    edit loan INDEX [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]");
         }
 
         boolean isLoan = false;
         int editIndex;
-        int argStartIndex = 2; // Default start index for arguments
+        int argStartIndex = 3;
 
-        // Explicitly handle "loan", "expense", or just an index
+        // Explicitly enforce "loan" or "expense"
         try {
             if (parts[1].equalsIgnoreCase("loan")) {
                 isLoan = true;
-                if (parts.length < 3) {
-                    throw new ExpensiveLehException("Please provide a loan index to edit!");
-                }
                 editIndex = Integer.parseInt(parts[2]) - 1;
-                argStartIndex = 3; // Shift loop start point
 
             } else if (parts[1].equalsIgnoreCase("expense")) {
                 isLoan = false;
-                if (parts.length < 3) {
-                    throw new ExpensiveLehException("Please provide an expense index to edit!");
-                }
                 editIndex = Integer.parseInt(parts[2]) - 1;
-                argStartIndex = 3; // Shift loop start point
 
             } else {
-                // Default behavior: user just typed "edit 1" (no loan/expense keyword), default will be expense
-                isLoan = false;
-                editIndex = Integer.parseInt(parts[1]) - 1;
-                argStartIndex = 2;
+                // The user typed something else in the second position (e.g., "edit 1 n/Food")
+                throw new ExpensiveLehException(
+                        "Please explicitly state whether to edit an 'expense' or 'loan'.\n" +
+                                "Example: edit expense 1 n/NewName OR edit loan 1 a/50");
             }
         } catch (NumberFormatException e) {
             throw new ExpensiveLehException("Please enter a valid integer for the index!");
@@ -358,23 +381,43 @@ public class Parser {
             boolean hasAmount = false;
             boolean hasDate = false;
 
-            for (int i = 1; i < parts.length; i++) {
+            int lastSeenFlagOrder = 0;
+
+            // --- ONE SINGLE LOOP (Starting at argStartIndex) ---
+            for (int i = argStartIndex; i < parts.length; i++) {
                 String part = parts[i];
+
+                if (part.startsWith("/") && part.length() > 1) {
+                    throw new ExpensiveLehException("Invalid format. Please use n/ for name, a/ for amount, "
+                            + "c/ for category, or d/ for date. Usage: edit [loan/expense] INDEX "
+                            + "[c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]");
+                }
+
                 if (part.startsWith("c/")) {
+                    if (lastSeenFlagOrder >= 1) {
+                        throw new ExpensiveLehException("Incorrect format! Please follow the exact order: "
+                                + "c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                    }
                     if (hasCategory) {
                         throw new ExpensiveLehException("Duplicate category flag 'c/' found. "
-                                + "Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                                + "Usage: edit [loan/expense] INDEX [c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]");
                     }
-                    if (isLoan == true){
+                    if (isLoan) {
                         throw new ExpensiveLehException("Category for loans cannot be changed! " +
                                 "Only debtor name and loan amount can be changed.");
                     }
                     category = part.substring(2);
                     hasCategory = true;
+                    lastSeenFlagOrder = 1;
+
                 } else if (part.startsWith("n/")) {
+                    if (lastSeenFlagOrder >= 2) {
+                        throw new ExpensiveLehException("Incorrect format! Please follow the exact order: "
+                                + "c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                    }
                     if (hasName) {
                         throw new ExpensiveLehException("Duplicate name flag 'n/' found. "
-                                + "Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                                + "Usage: edit [loan/expense] INDEX [c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]");
                     }
                     StringBuilder nameParts = new StringBuilder(part.substring(2));
 
@@ -389,26 +432,35 @@ public class Parser {
                     }
 
                     hasName = true;
+                    lastSeenFlagOrder = 2;
+
                 } else if (part.startsWith("a/")) {
+                    if (lastSeenFlagOrder >= 3) {
+                        throw new ExpensiveLehException("Incorrect format! Please follow the exact order: "
+                                + "c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                    }
                     if (hasAmount) {
                         throw new ExpensiveLehException("Duplicate amount flag 'a/' found. "
-                                + "Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                                + "Usage: edit [loan/expense] INDEX [c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]");
                     }
                     amount = Double.parseDouble(part.substring(2));
                     hasAmount = true;
+                    lastSeenFlagOrder = 3;
+
                 } else if (part.startsWith("d/")) {
+                    if (lastSeenFlagOrder >= 4) {
+                        throw new ExpensiveLehException("Incorrect format! Please follow the exact order: "
+                                + "c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                    }
                     if (hasDate) {
                         throw new ExpensiveLehException("Duplicate date flag 'd/' found. "
-                                + "Usage: add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]");
+                                + "Usage: edit [loan/expense] INDEX [c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]");
                     }
                     date = LocalDate.parse(part.substring(2),
                             java.time.format.DateTimeFormatter.ofPattern("dd-MM-uuuu")
                                     .withResolverStyle(ResolverStyle.STRICT));
                     hasDate = true;
-                } else if (part.startsWith("/") && part.length() > 1) {
-                    throw new ExpensiveLehException("Invalid format. Please use n/ for name, a/ for amount, "
-                            + "c/ for category, or d/ for date. Usage: edit [loan/expense] INDEX "
-                            + "[c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]");
+                    lastSeenFlagOrder = 4;
                 }
             }
 
@@ -454,34 +506,45 @@ public class Parser {
             throw new ExpensiveLehException("Invalid amount format. Please enter a valid number.");
         } catch (Exception e) {
             throw new ExpensiveLehException("Invalid edit command format. Usage: " +
-                            "edit [loan/expense] INDEX [c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]");
+                    "edit [loan/expense] INDEX [c/CATEGORY] [n/NAME] [a/AMOUNT] [d/DD-MM-YYYY]");
         }
     }
 
     private Command parseBudgetCategoryCommand(String line) throws ExpensiveLehException {
         String category = null;
         Double amount = null;
+        int lastSeenFlagOrder = 0; // 1 for c/, 2 for a/
+        boolean hasCategory = false;
+        boolean hasAmount = false;
 
         try {
             String[] parts = line.split("\\s+");
-            boolean hasCategory = false;
-            boolean hasAmount = false;
+
             for (int i = 1; i < parts.length; i++) {
                 String part = parts[i];
                 if (part.startsWith("c/")) {
+                    if (lastSeenFlagOrder >= 1) {
+                        throw new ExpensiveLehException("Incorrect format! Usage: budget c/CATEGORY a/AMOUNT");
+                    }
                     if (hasCategory) {
                         throw new ExpensiveLehException("Duplicate category flag 'c/' found. "
                                 + "Usage: budget c/CATEGORY a/AMOUNT");
                     }
                     category = part.substring(2);
                     hasCategory = true;
+                    lastSeenFlagOrder = 1;
+
                 } else if (part.startsWith("a/")) {
+                    if (lastSeenFlagOrder >= 2) {
+                        throw new ExpensiveLehException("Incorrect format! Usage: budget c/CATEGORY a/AMOUNT");
+                    }
                     if (hasAmount) {
                         throw new ExpensiveLehException("Duplicate amount flag 'a/' found. "
                                 + "Usage: budget c/CATEGORY a/AMOUNT");
                     }
                     amount = Double.parseDouble(part.substring(2));
                     hasAmount = true;
+                    lastSeenFlagOrder = 2;
                 }
             }
 
