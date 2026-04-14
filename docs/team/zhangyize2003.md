@@ -35,7 +35,7 @@ Features include expense management, budgeting, loans, bookmarks, and search fun
 
 **Enhancements to existing features:** Input validation across `add`, `edit` and `budget` commands
 - Added character validation for expense names, rejecting inputs that contain characters which could corrupt the save file or cause parsing errors, while still allowing commonly used characters such as apostrophes, hyphens, and brackets.
-- This required analysing the save format to identify that having "|" delimiters in names would break the parser on reload, then determining the minimal set of characters to block without being unnecessarily restrictive to users.
+- This required analysing the save format to identify that having `|` delimiters in names would break the parser on reload, then determining the minimal set of characters to block without being unnecessarily restrictive to users.
 - Added an upper bound of 1,000,000,000 for all amount and budget fields across add, edit, and budget commands to guard against unrealistic or buggy inputs.
 
 **Enhancements to existing features:** Stricter date parsing
