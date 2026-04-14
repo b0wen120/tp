@@ -210,7 +210,9 @@ The add expense feature is implemented through the `AddCommand` class and `Expen
     - Ensures amount is non-negative, finite, and not NaN
     - Uses assertions to verify the expense is added to the list
 
-5. **Feedback**: The UI displays a success message with the expense details and remaining budget.
+5. **Budget Violation Check**: After adding the expense, the system checks if a category budget was set and if the expense exceeds it. Similarly, it checks if the global budget is exceeded. If either condition is met, a warning message is appended to the output showing the overspent amount.
+
+6. **Feedback**: The UI displays a success message with the expense details and remaining budget, along with any budget violation warnings.
 
 Example:
 
@@ -316,7 +318,9 @@ edit 2 a/6.00
 
 **Step 3.** The expense is replaced in the list using `expenses.set(index, newExpense)`.
 
-**Step 4.** The UI confirms the update.
+**Step 4.** The system checks if editing the expense would exceed the category budget or global budget. If so, a warning message is appended.
+
+**Step 5.** The UI confirms the update and displays any budget violation warnings.
 
 ![Edit Expense Sequence Diagram](Diagrams/EditExpenseSequenceDiagram.png)
 

@@ -59,6 +59,7 @@ Format: `add c/CATEGORY n/NAME a/AMOUNT [d/DD-MM-YYYY]`
 * `NAME` can contain multiple words but prevents some special characters.
 * `AMOUNT` must be a positive number less than 1,000,000,000.
 * `DATE` is optional and defaults to today's date if not specified.
+* If adding the expense would exceed a category budget or the global budget, a warning will be displayed indicating the overspent amount.
 
 Example: `add c/Food n/Jollibee a/9.95 d/19-03-2026`
 
@@ -74,6 +75,26 @@ Value    : $9.95
 Date     : 19-03-2026
 ================================================
 Remaining Budget: $990.05
+________________________________________________________________
+```
+
+> **Note:** If adding an expense would exceed a category budget or the global budget, a warning will be displayed indicating the overspent amount.
+
+Example: `add c/Food n/Lunch a/60` (assuming Food budget is set to $50)
+
+Output:
+
+```
+________________________________________________________________
+ExpensiveLeh says -> Expense added successfully!
+================================================
+Category : Food
+Name     : Lunch
+Value    : $60.00
+Date     : 14-04-2026
+================================================
+Remaining Budget: $940.00
+Warning: You have overspent the Food budget by $10.00
 ________________________________________________________________
 ```
 
@@ -210,6 +231,19 @@ ________________________________________________________________
 ExpensiveLeh says -> Expense at index 2 updated successfully!
 ________________________________________________________________
 ```
+
+Example: `edit 1 c/Groceries a/10` (changing Food expense to Groceries with Groceries budget set to $30)
+
+Output:
+
+```
+________________________________________________________________
+ExpensiveLeh says -> Expense at index 1 updated successfully!
+Warning: You have overspent the Groceries budget by $5.00
+________________________________________________________________
+```
+
+> **Note:** If editing an expense would exceed a category budget or the global budget, a warning will be displayed indicating the overspent amount.
 
 ### Editing a loan: `edit`
 Edits an existing loan record in the loans list.
